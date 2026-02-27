@@ -101,3 +101,32 @@ def get_trending_stocks():
     except Exception as e:
         print(f"爬取熱搜失敗: {e}")
         return ["NVDA", "TSLA", "AAPL", "AMD", "MSFT"] # 失敗時的保底清單
+    
+def get_prediction(df, info):
+    if df.empty: return {}
+    
+    last_close = df['Close'].iloc[-1]
+    ma5 = df['MA5'].iloc[-1]
+    ma20 = df['MA20'].iloc[-1]
+    ma60 = df['MA60'].iloc[-1]
+    
+    # 1. 短期預測：多空動能
+    short_term = "🟢 看多" if last_close > ma5 else "🔴 看空"
+    short_reason = "股價位於週線之上，動能強勁" if last_close > ma5 else "短期跌破週線，震盪加劇"
+    
+    # 2. 中期預測：趨勢方向
+    mid_term = "🟢 看多" if ma20 > ma60 else "🔴 看空"
+    mid_reason = "月線高於季線，處於上升通道" if ma20 > ma60 else "空頭排列，壓力重重"
+    
+    # 3. 長期預測：價值位階
+    h52 = info.get('52w_high', 1)
+    l52 = info.get('52w_low', 0)
+    pos = (last_close - l52) / (h52 - l52) if (h52 - l52) != 0 else 0.5
+    long_term = "🟡 中性" if 0.3 < pos < 0.7 else ("🟢 看多" if pos < 0.3 else "🔴 警戒")
+    long_reason = "超跌區間，具長線投資價值" if pos < 0.3 else ("高檔過熱，需防回檔" if pos > 0.7 else "處於歷史合理評價區間")
+    
+    return {
+        "short": (short_term, short_reason),
+        "mid": (mid_term, mid_reason),
+        "long": (long_term, long_reason)
+    }
