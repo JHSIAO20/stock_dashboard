@@ -77,6 +77,17 @@ if ticker_input:
             if is_bull: st.markdown('<div class="decision-signal bull">🎯 強勢：建議持有</div>', unsafe_allow_html=True)
             else: st.markdown('<div class="decision-signal bear">⚠️ 弱勢：建議觀望</div>', unsafe_allow_html=True)
 
+        # --- 在 app.py 渲染預測區塊 ---
+        pred = get_prediction(hist, info)
+        st.write("🔮 **AI 趨勢展望觀測站**")
+        p1, p2, p3 = st.columns(3)
+        with p1:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">短期 (5D)</div><div class="metric-value">{pred["short"][0]}</div><div style="font-size:0.8rem;color:#8b949e;">{pred["short"][1]}</div></div>', unsafe_allow_html=True)
+        with p2:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">中期 (Q)</div><div class="metric-value">{pred["mid"][0]}</div><div style="font-size:0.8rem;color:#8b949e;">{pred["mid"][1]}</div></div>', unsafe_allow_html=True)
+        with p3:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">長期 (1Y)</div><div class="metric-value">{pred["long"][0]}</div><div style="font-size:0.8rem;color:#8b949e;">{pred["long"][1]}</div></div>', unsafe_allow_html=True)
+
         # 第二排：昨日交易數據
         st.write(f"🗓️ **昨日交易數據回顧 ({ticker})**")
         y1, y2, y3, y4, y5 = st.columns(5)
