@@ -1,6 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import requests
+import feedparser
 
 def get_trending_stocks():
     """爬取 Yahoo Finance 熱門活躍股榜單"""
